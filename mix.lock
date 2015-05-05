@@ -6,7 +6,7 @@
   "fs": {:hex, :fs, "0.9.2"},
   "phoenix": {:hex, :phoenix, "0.12.0"},
   "phoenix_ecto": {:hex, :phoenix_ecto, "0.3.2"},
-  "phoenix_haml": {:git, "git://github.com/crismali/phoenix_haml.git", "e92d4f44a7c3a268bc03d17e9a8081e4d65ed229", [branch: "bump_version_for_phoenix_0.12"]},
+  "phoenix_haml": {:git, "git://github.com/chrismccord/phoenix_haml.git", "95c8df64530e8228bf4ce0878b3f89c50b12acb5", []},
   "phoenix_live_reload": {:hex, :phoenix_live_reload, "0.3.3"},
   "plug": {:hex, :plug, "0.12.2"},
   "poison": {:hex, :poison, "1.4.0"},

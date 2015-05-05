@@ -31,7 +31,7 @@ defmodule IvanBloggo.Mixfile do
   defp deps do
     [{:phoenix, "~> 0.12"},
      {:phoenix_ecto, "~> 0.3"},
-     {:phoenix_haml, github: "crismali/phoenix_haml", branch: "bump_version_for_phoenix_0.12"},
+     {:phoenix_haml, github: "chrismccord/phoenix_haml"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_live_reload, "~> 0.3"},
      {:cowboy, "~> 1.0"}]
