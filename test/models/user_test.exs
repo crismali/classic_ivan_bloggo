@@ -28,7 +28,6 @@ defmodule IvanBloggo.UserTest do
     assert changeset.errors == [email: "can't be blank"]
   end
 
-  @tag timeout: 999999999
   test "validates uniqueness of email" do
     changeset = User.changeset(%User{}, @valid_attrs)
     Repo.insert(changeset)
