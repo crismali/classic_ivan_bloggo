@@ -63,4 +63,11 @@ defmodule IvanBloggo.UserTest do
     refute changeset.valid?
     assert changeset.errors == [encrypted_password: {"should be %{count} characters", 60}]
   end
+
+  test "#count is the number of users" do
+    assert User.count == 0
+    changeset = User.changeset(%User{}, @valid_attrs)
+    Repo.insert(changeset)
+    assert User.count == 1
+  end
 end
