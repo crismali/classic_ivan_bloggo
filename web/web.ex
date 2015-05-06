@@ -19,6 +19,7 @@ defmodule IvanBloggo.Web do
   def model do
     quote do
       use Ecto.Model
+      alias IvanBloggo.Repo
     end
   end
 
