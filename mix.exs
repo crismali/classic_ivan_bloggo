@@ -18,7 +18,7 @@ defmodule IvanBloggo.Mixfile do
   def application do
     [mod: {IvanBloggo, []},
      applications: [:phoenix, :cowboy, :logger,
-                    :phoenix_ecto, :postgrex]]
+                    :phoenix_ecto, :postgrex, :comeonin]]
   end
 
   # Specifies which paths to compile per environment
@@ -29,7 +29,9 @@ defmodule IvanBloggo.Mixfile do
   #
   # Type `mix help deps` for examples and options
   defp deps do
-    [{:phoenix, "~> 0.12"},
+    [
+     {:comeonin, "~> 0.8"},
+     {:phoenix, "~> 0.12"},
      {:phoenix_ecto, "~> 0.3"},
      {:phoenix_haml, github: "chrismccord/phoenix_haml"},
      {:postgrex, ">= 0.0.0"},
