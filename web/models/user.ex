@@ -1,15 +1,19 @@
 defmodule IvanBloggo.User do
   use IvanBloggo.Web, :model
 
+  import Comeonin.Bcrypt, only: [hashpwsalt: 1, checkpw: 2]
+
   schema "users" do
     field :email, :string
     field :encrypted_password, :string
+    field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
 
     timestamps
   end
 
-  @required_fields ~w(email encrypted_password)
-  @optional_fields ~w()
+  @required_fields ~w(email)
+  @optional_fields ~w(password password_confirmation encrypted_password)
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -22,7 +26,8 @@ defmodule IvanBloggo.User do
     |> cast(params, @required_fields, @optional_fields)
     |> validate_unique(:email, on: Repo, downcase: true)
     |> validate_format(:email, ~r/.+@.+\..+/)
-    |> validate_length(:encrypted_password, is: 60)
+    |> validate_password_matches_confirmation
+    |> validate_encrypted_password_present
   end
 
   def count do
@@ -30,4 +35,66 @@ defmodule IvanBloggo.User do
     [number_of_users] = Repo.all(query)
     number_of_users
   end
+
+  defp validate_encrypted_password_present(changeset) do
+    %{changes: changes, errors: errors, model: model} = changeset
+
+    new_error = encrypted_password_error(changes, model)
+
+    case new_error do
+      []    -> changeset
+      [_|_] ->
+        %{changeset | errors: new_error ++ errors, valid?: false}
+    end
+  end
+
+  defp encrypted_password_error(changes, model) do
+    encrypted_password = changes[:encrypted_password] || model.encrypted_password
+
+    if encrypted_password |> strip |> string_present? do
+      if String.length(encrypted_password) == 60 do
+        []
+      else
+        [encrypted_password: {"should be %{count} characters", 60}]
+      end
+    else
+      [encrypted_password: "can't be blank"]
+    end
+  end
+
+  defp validate_password_matches_confirmation(changeset) do
+    %{changes: changes, errors: errors} = changeset
+    password = changes[:password] |> strip
+    password_confirmation = changes[:password_confirmation] |> strip
+
+    new_error = password_error(password, password_confirmation)
+
+    case new_error do
+      []    ->
+        %{changeset | changes: set_encrypted_password(changes, password)}
+      [_|_] ->
+        %{changeset | errors: new_error ++ errors, valid?: false}
+    end
+  end
+
+  defp set_encrypted_password(changes, password) do
+    if string_present?(password) do
+      Dict.put(changes, :encrypted_password, hashpwsalt(password))
+    else
+      changes
+    end
+  end
+
+  defp password_error(password, password_confirmation) do
+    if password == password_confirmation do
+      []
+    else
+      [password_confirmation: "must match password"]
+    end
+  end
+
+  defp string_present?(suspect), do: String.length(suspect) != 0
+
+  defp strip(nil), do: ""
+  defp strip(suspect) when is_binary(suspect), do: String.strip(suspect)
 end
