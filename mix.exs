@@ -31,6 +31,7 @@ defmodule IvanBloggo.Mixfile do
   defp deps do
     [
      {:comeonin, "~> 0.8"},
+     {:ex_spec, "~> 0.3.0", only: :test},
      {:phoenix, "~> 0.12"},
      {:phoenix_ecto, "~> 0.3"},
      {:phoenix_haml, github: "chrismccord/phoenix_haml"},
