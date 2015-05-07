@@ -27,7 +27,7 @@ defmodule IvanBloggo.User do
     |> validate_unique(:email, on: Repo, downcase: true)
     |> validate_format(:email, ~r/.+@.+\..+/)
     |> validate_password_matches_confirmation
-    |> validate_encrypted_password_present
+    |> validate_encrypted_password_present_and_correct_length
   end
 
   def count do
@@ -36,7 +36,7 @@ defmodule IvanBloggo.User do
     number_of_users
   end
 
-  defp validate_encrypted_password_present(changeset) do
+  defp validate_encrypted_password_present_and_correct_length(changeset) do
     %{changes: changes, errors: errors, model: model} = changeset
 
     new_error = encrypted_password_error(changes, model)
