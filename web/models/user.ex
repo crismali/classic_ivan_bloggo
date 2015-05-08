@@ -33,11 +33,11 @@ defmodule IvanBloggo.User do
   end
 
   defp validate_presence_if_new(changeset, field) do
-    if changeset.model.id do
+    %{changes: changes, errors: errors} = changeset
+
+    if changeset.model.id || changes == %{} do
       changeset
     else
-      %{changes: changes, errors: errors} = changeset
-
       new_error = presence_if_new_error(field, changes[field])
 
       case new_error do

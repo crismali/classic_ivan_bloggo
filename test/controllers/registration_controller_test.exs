@@ -17,10 +17,13 @@ defmodule IvanBloggo.RegistrationControllerTest do
 
   describe "#new/2" do
     it "renders the new template", %{conn: conn} do
-      conn = get conn, registration_path(conn, :new)
-      response = html_response(conn, 200)
-      assert response =~ "Sign up today!"
-      refute response =~ "can't be blank"
+      response_text = conn
+        |> get(registration_path(conn, :new))
+        |> html_response(200)
+        |> text_for("body")
+
+      assert response_text =~ "Sign up today!"
+      refute response_text =~ "can't be blank"
     end
   end
 

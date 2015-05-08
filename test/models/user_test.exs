@@ -181,6 +181,13 @@ defmodule IvanBloggo.UserTest do
         end
       end
 
+      context "empty record" do
+        it "does not validate the presence of it" do
+          changeset = User.changeset(%User{}, :empty)
+          assert changeset.errors == [encrypted_password: "can't be blank"]
+        end
+      end
+
       context "new record" do
         it "validates presence of it" do
           changeset = User.changeset(%User{}, @attrs_without_password)
@@ -193,13 +200,20 @@ defmodule IvanBloggo.UserTest do
 
     context "password_confirmation" do
       context "persisted" do
-        it "does not validate presence of it" do
+        it "does not validate the presence of it" do
           changeset = User.changeset(%User{}, @valid_attrs)
           user = Repo.insert(changeset)
 
           changeset = User.changeset(user, %{password_confirmation: "   "})
           assert changeset.valid?
           assert changeset.errors == []
+        end
+      end
+
+      context "empty record" do
+        it "does not validate the presence of it" do
+          changeset = User.changeset(%User{}, :empty)
+          assert changeset.errors == [encrypted_password: "can't be blank"]
         end
       end
 
