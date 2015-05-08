@@ -18,6 +18,6 @@ defmodule IvanBloggo.RegistrationController do
   end
 
   def new(conn, _params) do
-    render conn, "new.html", changeset: User.changeset(%User{})
+    render conn, "new.html", changeset: User.changeset(%User{}, :empty)
   end
 end
