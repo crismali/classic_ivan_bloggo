@@ -22,6 +22,8 @@ defmodule IvanBloggo.ConnCase do
 
       # Alias the data repository and import query/model functions
       alias IvanBloggo.Repo
+      use ExSpec
+      import IvanBloggo.Helpers
       import Ecto.Model
       import Ecto.Query, only: [from: 2]
 

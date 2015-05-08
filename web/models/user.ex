@@ -30,12 +30,6 @@ defmodule IvanBloggo.User do
     |> validate_encrypted_password_present_and_correct_length
   end
 
-  def count do
-    query = from(user in __MODULE__, select: count(user.id))
-    [number_of_users] = Repo.all(query)
-    number_of_users
-  end
-
   defp validate_encrypted_password_present_and_correct_length(changeset) do
     %{changes: changes, errors: errors, model: model} = changeset
 

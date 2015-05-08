@@ -1,6 +1,5 @@
 defmodule IvanBloggo.UserTest do
   use IvanBloggo.ModelCase
-  use ExSpec
   alias IvanBloggo.User
 
   import Comeonin.Bcrypt, only: [hashpwsalt: 1, checkpw: 2]
@@ -166,15 +165,6 @@ defmodule IvanBloggo.UserTest do
         changeset = User.changeset(%User{}, %{password: "password", password_confirmation: "password"})
         assert checkpw("password", changeset.changes.encrypted_password)
       end
-    end
-  end
-
-  describe "#count" do
-    it "is the number of users" do
-      assert User.count == 0
-      changeset = User.changeset(%User{}, @valid_attrs)
-      Repo.insert(changeset)
-      assert User.count == 1
     end
   end
 end

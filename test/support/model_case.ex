@@ -15,6 +15,7 @@ defmodule IvanBloggo.ModelCase do
     quote do
       # Alias the data repository and import query/model functions
       alias IvanBloggo.Repo
+      use ExSpec
       import Ecto.Model
       import Ecto.Query, only: [from: 2]
     end
