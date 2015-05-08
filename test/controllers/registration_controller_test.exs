@@ -1,9 +1,7 @@
 defmodule IvanBloggo.RegistrationControllerTest do
   use IvanBloggo.ConnCase
 
-  alias IvanBloggo.RegistrationController
   alias IvanBloggo.User
-  import Comeonin.Bcrypt, only: [hashpwsalt: 1, checkpw: 2]
 
   @valid_params user: %{
     email: "foo@example.com",
@@ -16,8 +14,6 @@ defmodule IvanBloggo.RegistrationControllerTest do
     conn = conn()
     {:ok, conn: conn}
   end
-
-  @tag timeout: 99999999
 
   describe "#new/2" do
     it "renders the new template", %{conn: conn} do
@@ -37,24 +33,23 @@ defmodule IvanBloggo.RegistrationControllerTest do
 
       it "creates a user with the given params", %{conn: conn} do
         assert count(User) == 0
-        conn = post conn, registration_path(conn, :create), @valid_params
+        post conn, registration_path(conn, :create), @valid_params
         assert count(User) == 1
       end
     end
 
-    @tag timeout: 99999999
     context "with invalid data" do
       it "with invalid data renders the new template with errors", %{conn: conn} do
         conn = post conn, registration_path(conn, :create), @invalid_params
         response = html_response(conn, 200)
-        require IEx; IEx.pry
+
         assert response =~ "Sign up today!"
         assert response =~ "can't be blank"
       end
 
       it "does not create a new user" do
         assert count(User) == 0
-        conn = post conn, registration_path(conn, :create), @invalid_params
+        post conn, registration_path(conn, :create), @invalid_params
         assert count(User) == 0
       end
     end
