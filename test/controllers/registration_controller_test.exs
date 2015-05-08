@@ -44,7 +44,7 @@ defmodule IvanBloggo.RegistrationControllerTest do
         response = html_response(conn, 200)
 
         assert response =~ "Sign up today!"
-        assert response =~ "can't be blank"
+        assert text_for(response, "label") =~ "can't be blank"
       end
 
       it "does not create a new user" do
@@ -53,5 +53,9 @@ defmodule IvanBloggo.RegistrationControllerTest do
         assert count(User) == 0
       end
     end
+  end
+
+  defp text_for(html, selector) do
+    Floki.find(html, selector) |> Floki.text
   end
 end
