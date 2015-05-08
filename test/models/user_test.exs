@@ -9,6 +9,25 @@ defmodule IvanBloggo.UserTest do
     password: "password",
     password_confirmation: "password",
   }
+  @attrs_without_password %{
+    email: "foo@example.com",
+    password_confirmation: "something",
+    encrypted_password: hashpwsalt("password")
+  }
+  @attrs_without_password_confirmation %{
+    email: "foo@example.com",
+    password: "something",
+    encrypted_password: hashpwsalt("password")
+  }
+  @attrs_non_matching_password %{
+    email: "foo@example.com",
+    password: "password",
+    password_confirmation: "passwerd",
+  }
+
+  @blank_error_message "can't be blank"
+  @must_match_message "must match password"
+
   @invalid_attrs %{}
 
   describe "#changeset" do
@@ -33,7 +52,7 @@ defmodule IvanBloggo.UserTest do
         stripped_attrs = Dict.delete @valid_attrs, :email
         changeset = User.changeset(%User{}, stripped_attrs)
         refute changeset.valid?
-        assert changeset.errors == [email: "can't be blank"]
+        assert changeset.errors == [email: @blank_error_message]
       end
 
       context "must be unique" do
@@ -77,7 +96,7 @@ defmodule IvanBloggo.UserTest do
             changeset = User.changeset(%User{}, invalid_attrs)
 
             refute changeset.valid?
-            assert changeset.errors == [encrypted_password: "can't be blank", password_confirmation: "must match password"]
+            assert changeset.errors == [encrypted_password: @blank_error_message, password_confirmation: @must_match_message]
           end
         end
 
@@ -86,14 +105,22 @@ defmodule IvanBloggo.UserTest do
             changeset = User.changeset(%User{encrypted_password: nil}, %{email: "foo@example.com"})
 
             refute changeset.valid?
-            assert changeset.errors == [encrypted_password: "can't be blank"]
+            assert changeset.errors == [
+              encrypted_password: @blank_error_message,
+              password_confirmation: @blank_error_message,
+              password: @blank_error_message
+            ]
           end
 
           it "is invalid when not present at all" do
             changeset = User.changeset(%User{}, %{email: "foo@example.com"})
 
             refute changeset.valid?
-            assert changeset.errors == [encrypted_password: "can't be blank"]
+            assert changeset.errors == [
+              encrypted_password: @blank_error_message,
+              password_confirmation: @blank_error_message,
+              password: @blank_error_message
+            ]
           end
         end
       end
@@ -106,16 +133,17 @@ defmodule IvanBloggo.UserTest do
           refute changeset.valid?
           assert changeset.errors == [
             encrypted_password: {"should be %{count} characters", 60},
-            password_confirmation: "must match password"
+            password_confirmation: @must_match_message
           ]
         end
 
         it "is invalid when initialized to an incorrect length" do
-          changeset = User.changeset(%User{encrypted_password: "wrong length"}, %{email: "dieh@rd.com"})
+          changeset = User.changeset(%User{encrypted_password: "wrong length"}, @attrs_non_matching_password)
 
           refute changeset.valid?
           assert changeset.errors == [
             encrypted_password: {"should be %{count} characters", 60},
+            password_confirmation: @must_match_message
           ]
         end
       end
@@ -136,7 +164,54 @@ defmodule IvanBloggo.UserTest do
           non_matching_attrs = Dict.merge(@valid_attrs, %{password: "password", password_confirmation: "doesn't match"})
           changeset = User.changeset(%User{}, non_matching_attrs)
           refute changeset.valid?
-          assert changeset.errors == [encrypted_password: "can't be blank", password_confirmation: "must match password"]
+          assert changeset.errors == [encrypted_password: @blank_error_message, password_confirmation: @must_match_message]
+        end
+      end
+    end
+
+    context "password" do
+      context "persisted" do
+        it "does not validate presence of it" do
+          changeset = User.changeset(%User{}, @valid_attrs)
+          user = Repo.insert(changeset)
+
+          changeset = User.changeset(user, %{password: "   "})
+          assert changeset.valid?
+          assert changeset.errors == []
+        end
+      end
+
+      context "new record" do
+        it "validates presence of it" do
+          changeset = User.changeset(%User{}, @attrs_without_password)
+
+          refute changeset.valid?
+          assert changeset.errors == [password: @blank_error_message, password_confirmation: @must_match_message]
+        end
+      end
+    end
+
+    context "password_confirmation" do
+      context "persisted" do
+        it "does not validate presence of it" do
+          changeset = User.changeset(%User{}, @valid_attrs)
+          user = Repo.insert(changeset)
+
+          changeset = User.changeset(user, %{password_confirmation: "   "})
+          assert changeset.valid?
+          assert changeset.errors == []
+        end
+      end
+
+      context "new record" do
+        it "validates presence of it" do
+          changeset = User.changeset(%User{}, @attrs_without_password_confirmation)
+
+          refute changeset.valid?
+          assert changeset.errors == [
+            password_confirmation: @blank_error_message,
+            password_confirmation: @must_match_message
+          ]
         end
       end
     end

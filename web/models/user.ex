@@ -27,7 +27,33 @@ defmodule IvanBloggo.User do
     |> validate_unique(:email, on: Repo, downcase: true)
     |> validate_format(:email, ~r/.+@.+\..+/)
     |> validate_password_matches_confirmation
+    |> validate_presence_if_new(:password)
+    |> validate_presence_if_new(:password_confirmation)
     |> validate_encrypted_password_present_and_correct_length
+  end
+
+  defp validate_presence_if_new(changeset, field) do
+    if changeset.model.id do
+      changeset
+    else
+      %{changes: changes, errors: errors} = changeset
+
+      new_error = presence_if_new_error(field, changes[field])
+
+      case new_error do
+        []    -> changeset
+        [_|_] ->
+          %{changeset | errors: new_error ++ errors, valid?: false}
+      end
+    end
+  end
+
+  defp presence_if_new_error(field, value) do
+    if value |> strip |> string_present? do
+      []
+    else
+      [{field, "can't be blank"}]
+    end
   end
 
   defp validate_encrypted_password_present_and_correct_length(changeset) do
