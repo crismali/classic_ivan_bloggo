@@ -15,6 +15,8 @@ defmodule IvanBloggo.Router do
   scope "/", IvanBloggo do
     pipe_through :browser # Use the default browser stack
 
+    resources "/sign_up", RegistrationController, only: [:create, :new], as: :registration
+
     get "/", PageController, :index
   end
 
