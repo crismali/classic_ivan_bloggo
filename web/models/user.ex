@@ -12,8 +12,8 @@ defmodule IvanBloggo.User do
     timestamps
   end
 
-  @required_fields ~w(email password password_confirmation)
-  @optional_fields ~w(encrypted_password)
+  @required_fields ~w(email password password_confirmation encrypted_password)
+  @optional_fields ~w()
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -22,72 +22,65 @@ defmodule IvanBloggo.User do
   with no validation performed.
   """
   def changeset(model, params \\ nil) do
+    processed_params = preprocess_params(params)
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(processed_params, @required_fields, @optional_fields)
     |> validate_unique(:email, on: Repo, downcase: true)
     |> validate_format(:email, ~r/.+@.+\..+/)
+    |> validate_length(:encrypted_password, is: 60)
     |> validate_password_matches_confirmation
-    |> validate_encrypted_password_present_and_correct_length
   end
 
-  defp validate_encrypted_password_present_and_correct_length(changeset) do
-    %{changes: changes, errors: errors, model: model} = changeset
+  defp preprocess_params(params) when is_map(params) do
+    params = atomize_keys(params)
+    password = params[:password]
+    password_confirmation = params[:password_confirmation]
 
-    new_error = encrypted_password_error(changes, model)
-
-    case new_error do
-      []    -> changeset
-      [_|_] ->
-        %{changeset | errors: new_error ++ errors, valid?: false}
-    end
-  end
-
-  defp encrypted_password_error(changes, model) do
-    encrypted_password = changes[:encrypted_password] || model.encrypted_password
-
-    if encrypted_password |> strip |> string_present? do
-      if String.length(encrypted_password) == 60 do
-        []
-      else
-        [encrypted_password: {"should be %{count} characters", 60}]
-      end
+    if password_and_confirmation_match?(password, password_confirmation) do
+      Dict.put(params, :encrypted_password, safe_hashpwsalt(password))
     else
-      [encrypted_password: "can't be blank"]
+      params
     end
+  end
+  defp preprocess_params(arg), do: arg
+
+  defp atomize_keys(map) do
+    Enum.reduce map, %{}, fn
+      {key, value}, acc when is_atom(key) ->
+        Dict.put(acc, key, value)
+      {key, value}, acc when is_binary(key) ->
+        Dict.put(acc, String.to_atom(key), value)
+    end
+  end
+
+  defp safe_hashpwsalt(nil), do: nil
+  defp safe_hashpwsalt(""), do: nil
+  defp safe_hashpwsalt(password) when is_binary(password), do: hashpwsalt(password)
+
+  defp password_and_confirmation_match?(password, password_confirmation) do
+    strip(password) == strip(password_confirmation)
   end
 
   defp validate_password_matches_confirmation(changeset) do
     %{changes: changes, errors: errors} = changeset
-    password = changes[:password] |> strip
-    password_confirmation = changes[:password_confirmation] |> strip
+    password = changes[:password]
+    password_confirmation = changes[:password_confirmation]
 
     new_error = password_error(password, password_confirmation)
 
     case new_error do
-      []    ->
-        %{changeset | changes: set_encrypted_password(changes, password)}
-      [_|_] ->
-        %{changeset | errors: new_error ++ errors, valid?: false}
-    end
-  end
-
-  defp set_encrypted_password(changes, password) do
-    if string_present?(password) do
-      Dict.put(changes, :encrypted_password, hashpwsalt(password))
-    else
-      changes
+      []    -> changeset
+      [_|_] -> %{changeset | errors: new_error ++ errors, valid?: false}
     end
   end
 
   defp password_error(password, password_confirmation) do
-    if password == password_confirmation do
+    if password_and_confirmation_match?(password, password_confirmation) do
       []
     else
       [password_confirmation: "must match password"]
     end
   end
-
-  defp string_present?(suspect), do: String.length(suspect) != 0
 
   defp strip(nil), do: ""
   defp strip(suspect) when is_binary(suspect), do: String.strip(suspect)
