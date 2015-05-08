@@ -107,8 +107,8 @@ defmodule IvanBloggo.UserTest do
             refute changeset.valid?
             assert changeset.errors == [
               encrypted_password: @blank_error_message,
-              password_confirmation: @blank_error_message,
-              password: @blank_error_message
+              password: @blank_error_message,
+              password_confirmation: @blank_error_message
             ]
           end
 
@@ -118,8 +118,8 @@ defmodule IvanBloggo.UserTest do
             refute changeset.valid?
             assert changeset.errors == [
               encrypted_password: @blank_error_message,
-              password_confirmation: @blank_error_message,
-              password: @blank_error_message
+              password: @blank_error_message,
+              password_confirmation: @blank_error_message
             ]
           end
         end
@@ -193,7 +193,10 @@ defmodule IvanBloggo.UserTest do
           changeset = User.changeset(%User{}, @attrs_without_password)
 
           refute changeset.valid?
-          assert changeset.errors == [password: @blank_error_message, password_confirmation: @must_match_message]
+          assert changeset.errors == [
+            password_confirmation: @must_match_message,
+            password: @blank_error_message
+          ]
         end
       end
     end
@@ -223,8 +226,8 @@ defmodule IvanBloggo.UserTest do
 
           refute changeset.valid?
           assert changeset.errors == [
-            password_confirmation: @blank_error_message,
-            password_confirmation: @must_match_message
+            password_confirmation: @must_match_message,
+            password_confirmation: @blank_error_message
           ]
         end
       end
