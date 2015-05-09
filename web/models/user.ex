@@ -1,7 +1,7 @@
 defmodule IvanBloggo.User do
   use IvanBloggo.Web, :model
 
-  import Comeonin.Bcrypt, only: [hashpwsalt: 1, checkpw: 2]
+  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
   schema "users" do
     field :email, :string
