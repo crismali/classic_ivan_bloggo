@@ -12,7 +12,7 @@ defmodule IvanBloggo.PostController do
   end
 
   def new(conn, _params) do
-    changeset = Post.changeset(%Post{}, :empty)
+    changeset = Post.changeset(%Post{})
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -37,7 +37,7 @@ defmodule IvanBloggo.PostController do
 
   def edit(conn, %{"id" => id}) do
     post = Repo.get(Post, id)
-    changeset = Post.changeset(post, :empty)
+    changeset = Post.changeset(post)
     render(conn, "edit.html", post: post, changeset: changeset)
   end
 

@@ -21,7 +21,7 @@ defmodule IvanBloggo.User do
   If `params` are nil, an invalid changeset is returned
   with no validation performed.
   """
-  def changeset(model, params \\ nil) do
+  def changeset(model, params \\ :empty) do
     processed_params = preprocess_params(params)
     model
     |> cast(processed_params, @required_fields, @optional_fields)
