@@ -79,7 +79,7 @@ defmodule IvanBloggo.PostControllerTest do
       it "updates the post", %{conn: conn} do
         post = Repo.insert %Post{}
         refute Repo.get_by(Post, @valid_attrs)
-        conn = put conn, post_path(conn, :update, post), @valid_params
+        put conn, post_path(conn, :update, post), @valid_params
         assert Repo.get_by(Post, @valid_attrs)
       end
 
