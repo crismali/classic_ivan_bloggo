@@ -2,7 +2,8 @@ defmodule IvanBloggo.PostControllerTest do
   use IvanBloggo.ConnCase
 
   alias IvanBloggo.Post
-  @valid_params post: %{body: "some content", title: "some content"}
+  @valid_attrs %{body: "some content", title: "some content"}
+  @valid_params post: @valid_attrs
   @invalid_params post: %{}
 
   setup do
@@ -29,6 +30,12 @@ defmodule IvanBloggo.PostControllerTest do
       it "redirects to the post show page", %{conn: conn} do
         conn = post conn, post_path(conn, :create), @valid_params
         assert redirected_to(conn) == post_path(conn, :index)
+      end
+
+      it "creates a post" do
+        refute Repo.get_by(Post, @valid_attrs)
+        post conn, post_path(conn, :create), @valid_params
+        assert Repo.get_by(Post, @valid_attrs)
       end
     end
 
@@ -64,6 +71,7 @@ defmodule IvanBloggo.PostControllerTest do
         assert redirected_to(conn) == post_path(conn, :index)
       end
     end
+
     context "with invalid data" do
       it "renders the edit template", %{conn: conn} do
         post = Repo.insert %Post{}
@@ -74,10 +82,15 @@ defmodule IvanBloggo.PostControllerTest do
   end
 
   describe "#destroy" do
-    it "destroys the post and redirects to the index page", %{conn: conn} do
+    it "redirects to the index page", %{conn: conn} do
       post = Repo.insert %Post{}
       conn = delete conn, post_path(conn, :delete, post)
       assert redirected_to(conn) == post_path(conn, :index)
+    end
+
+    it "destroys the post", %{conn: conn} do
+      post = Repo.insert %Post{}
+      delete conn, post_path(conn, :delete, post)
       refute Repo.get(Post, post.id)
     end
   end
