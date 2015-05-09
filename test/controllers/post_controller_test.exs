@@ -37,6 +37,11 @@ defmodule IvanBloggo.PostControllerTest do
         post conn, post_path(conn, :create), @valid_params
         assert Repo.get_by(Post, @valid_attrs)
       end
+
+      it "sets the flash", %{conn: conn} do
+        conn = post conn, post_path(conn, :create), @valid_params
+        assert_flash_set conn, :info
+      end
     end
 
     context "with invalid data" do
@@ -70,6 +75,12 @@ defmodule IvanBloggo.PostControllerTest do
         conn = put conn, post_path(conn, :update, post), @valid_params
         assert redirected_to(conn) == post_path(conn, :index)
       end
+
+      it "sets the flash", %{conn: conn} do
+        post = Repo.insert %Post{}
+        conn = put conn, post_path(conn, :update, post), @valid_params
+        assert_flash_set conn, :info
+      end
     end
 
     context "with invalid data" do
@@ -93,5 +104,15 @@ defmodule IvanBloggo.PostControllerTest do
       delete conn, post_path(conn, :delete, post)
       refute Repo.get(Post, post.id)
     end
+
+    it "sets the flash", %{conn: conn} do
+      post = Repo.insert %Post{}
+      conn = delete conn, post_path(conn, :delete, post)
+      assert_flash_set conn, :info
+    end
+  end
+
+  defp assert_flash_set(conn, key) do
+    assert get_flash(conn, key)
   end
 end
