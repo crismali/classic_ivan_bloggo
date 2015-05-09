@@ -76,6 +76,13 @@ defmodule IvanBloggo.PostControllerTest do
         assert redirected_to(conn) == post_path(conn, :index)
       end
 
+      it "updates the post", %{conn: conn} do
+        post = Repo.insert %Post{}
+        refute Repo.get_by(Post, @valid_attrs)
+        conn = put conn, post_path(conn, :update, post), @valid_params
+        assert Repo.get_by(Post, @valid_attrs)
+      end
+
       it "sets the flash", %{conn: conn} do
         post = Repo.insert %Post{}
         conn = put conn, post_path(conn, :update, post), @valid_params
