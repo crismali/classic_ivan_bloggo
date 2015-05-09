@@ -32,26 +32,16 @@ defmodule IvanBloggo.User do
   end
 
   defp preprocess_params(params) when is_map(params) do
-    params = atomize_keys(params)
-    password = params[:password]
-    password_confirmation = params[:password_confirmation]
+    password = params["password"]
+    password_confirmation = params["password_confirmation"]
 
     if password_and_confirmation_match?(password, password_confirmation) do
-      Dict.put(params, :encrypted_password, safe_hashpwsalt(password))
+      Dict.put(params, "encrypted_password", safe_hashpwsalt(password))
     else
       params
     end
   end
   defp preprocess_params(arg), do: arg
-
-  defp atomize_keys(map) do
-    Enum.reduce map, %{}, fn
-      {key, value}, acc when is_atom(key) ->
-        Dict.put(acc, key, value)
-      {key, value}, acc when is_binary(key) ->
-        Dict.put(acc, String.to_atom(key), value)
-    end
-  end
 
   defp safe_hashpwsalt(nil), do: nil
   defp safe_hashpwsalt(""), do: nil
