@@ -15,6 +15,10 @@ defmodule IvanBloggo.Router do
   scope "/", IvanBloggo do
     pipe_through :browser # Use the default browser stack
 
+    post "/sign_in", SessionController, :create, as: :session
+    get "/sign_in", SessionController, :new, as: :session
+    delete "/sign_in", SessionController, :delete, as: :session
+
     resources "/sign_up", RegistrationController, only: [:create, :new], as: :registration
     resources "/posts", PostController
 

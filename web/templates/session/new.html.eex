@@ -1,0 +1,20 @@
+<h2>Sign in</h2>
+<%= if @error do %>
+<div class="error">Incorrect email/password</div>
+<% end %>
+
+<%= form_tag(session_path(@conn, :create)) do %>
+  <label>
+    Email
+    <input name="email" type="email">
+  </label>
+
+  <label>
+    Password
+    <input name="password" type="password">
+  </label>
+
+  <%= submit "Sign in" %>
+<% end %>
+
+<%= link "Sign up", to: registration_path(@conn, :new) %>

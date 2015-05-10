@@ -1,6 +1,8 @@
 defmodule IvanBloggo.RegistrationControllerTest do
   use IvanBloggo.ConnCase
 
+  import IvanBloggo.HtmlHelpers
+
   alias IvanBloggo.User
 
   @valid_params user: %{
@@ -56,9 +58,5 @@ defmodule IvanBloggo.RegistrationControllerTest do
         assert count(User) == 0
       end
     end
-  end
-
-  defp text_for(html, selector) do
-    Floki.find(html, selector) |> Floki.text
   end
 end

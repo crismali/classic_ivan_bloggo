@@ -5,7 +5,7 @@
     <label>
       Email
       <%= @changeset.errors[:email] %>
-      <%= text_input f, :email %>
+      <%= email_input f, :email %>
     </label>
   </p>
 
@@ -13,7 +13,7 @@
     <label>
       Password
       <%= @changeset.errors[:password] %>
-      <%= text_input f, :password %>
+      <%= password_input f, :password %>
     </label>
   </p>
 
@@ -21,7 +21,7 @@
     <label>
       Password Confirmation
       <%= @changeset.errors[:password_confirmation] %>
-      <%= text_input f, :password_confirmation %>
+      <%= password_input f, :password_confirmation %>
     </label>
   </p>
   <%= submit "Submit" %>
