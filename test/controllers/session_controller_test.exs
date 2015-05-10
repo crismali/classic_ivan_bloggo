@@ -18,19 +18,19 @@ defmodule IvanBloggo.SessionControllerTest do
   describe "#create" do
     context "successful sign in" do
       it "adds the user's id to the session", %{conn: conn} do
-        user = User.changeset(%User{}, @user_attrs) |> Repo.insert
+        user = create_user(@user_attrs)
         conn = post conn, session_path(conn, :create), @valid_params
         assert get_session(conn, :user_id) == user.id
       end
 
       it "redirects to the root path", %{conn: conn} do
-        User.changeset(%User{}, @user_attrs) |> Repo.insert
+        create_user(@user_attrs)
         conn = post conn, session_path(conn, :create), @valid_params
         assert redirected_to(conn) == root_path(conn, :index)
       end
 
       it "sets the flash", %{conn: conn} do
-        User.changeset(%User{}, @user_attrs) |> Repo.insert
+        create_user(@user_attrs)
         conn = post conn, session_path(conn, :create), @valid_params
         assert get_flash(conn, :info)
       end
@@ -38,7 +38,7 @@ defmodule IvanBloggo.SessionControllerTest do
 
     context "incorrect password" do
       it "renders the new template with an error", %{conn: conn} do
-        User.changeset(%User{}, @user_attrs) |> Repo.insert
+        create_user(@user_attrs)
         conn = post conn, session_path(conn, :create), @wrong_password_params
         html = html_response(conn, 200)
         assert text_for(html, "h2") == "Sign in"
@@ -46,7 +46,7 @@ defmodule IvanBloggo.SessionControllerTest do
       end
 
       it "doesn't put the user id in the session", %{conn: conn} do
-        User.changeset(%User{}, @user_attrs) |> Repo.insert
+        create_user(@user_attrs)
         conn = post conn, session_path(conn, :create), @wrong_password_params
         refute get_session(conn, :user_id)
       end
@@ -81,9 +81,9 @@ defmodule IvanBloggo.SessionControllerTest do
     end
   end
 
-  describe "#destroy" do
+  describe "#delete" do
     it "clears the session", %{conn: conn} do
-      User.changeset(%User{}, @user_attrs) |> Repo.insert
+      create_user(@user_attrs)
       conn = conn
         |> post(session_path(conn, :create), @valid_params)
         |> delete(session_path(conn, :delete))
@@ -95,5 +95,9 @@ defmodule IvanBloggo.SessionControllerTest do
       conn = delete(conn, session_path(conn, :delete))
       assert redirected_to(conn) == root_path(conn, :index)
     end
+  end
+
+  defp create_user(params) do
+    User.changeset(%User{}, params) |> Repo.insert
   end
 end
