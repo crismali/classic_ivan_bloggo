@@ -11,7 +11,7 @@ defmodule IvanBloggo.RegistrationController do
 
     if changeset.valid? do
       Repo.insert(changeset)
-      redirect conn, to: page_path(conn, :index)
+      redirect conn, to: root_path(conn, :index)
     else
       render conn, "new.html", changeset: changeset
     end

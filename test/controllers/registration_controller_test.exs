@@ -31,7 +31,7 @@ defmodule IvanBloggo.RegistrationControllerTest do
     context "with valid data" do
       it "redirects to the root", %{conn: conn} do
         conn = post conn, registration_path(conn, :create), @valid_params
-        assert redirected_to(conn) == page_path(conn, :index)
+        assert redirected_to(conn) == root_path(conn, :index)
       end
 
       it "creates a user with the given params", %{conn: conn} do

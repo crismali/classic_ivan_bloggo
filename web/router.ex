@@ -18,7 +18,7 @@ defmodule IvanBloggo.Router do
     resources "/sign_up", RegistrationController, only: [:create, :new], as: :registration
     resources "/posts", PostController
 
-    get "/", PageController, :index
+    get "/", PostController, :index, as: :root
   end
 
   # Other scopes may use custom stacks.
