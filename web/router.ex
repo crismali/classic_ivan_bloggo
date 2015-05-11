@@ -28,7 +28,8 @@ defmodule IvanBloggo.Router do
     get "/sign_in", SessionController, :new, as: :session
     delete "/sign_in", SessionController, :delete, as: :session
 
-    resources "/sign_up", RegistrationController, only: [:create, :new], as: :registration
+    post "/sign_up", RegistrationController, :create, as: :registration
+    get "/sign_up", RegistrationController, :new, as: :registration
     resources "/posts", PostController
 
     get "/", PostController, :index, as: :root
