@@ -12,6 +12,15 @@ defmodule IvanBloggo.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :plain_text do
+    plug :accepts, ["text"]
+  end
+
+  scope "/", IvanBloggo do
+    pipe_through :plain_text
+    get "/status", StatusController, :index, as: :status
+  end
+
   scope "/", IvanBloggo do
     pipe_through :browser # Use the default browser stack
 
