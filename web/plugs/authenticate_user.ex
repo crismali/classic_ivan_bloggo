@@ -1,6 +1,8 @@
 defmodule IvanBloggo.Plugs.AuthenticateUser do
   use IvanBloggo.Web, :controller
 
+  plug :action
+
   alias IvanBloggo.User
 
   def init(default), do: default

@@ -25,7 +25,7 @@ defmodule IvanBloggo.SessionController do
   end
 
   def new(conn, _params) do
-    render conn, "new.html"
+    render conn, "new.html", error: false
   end
 
   def delete(conn, _params) do

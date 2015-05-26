@@ -34,11 +34,11 @@ defmodule IvanBloggo.Mixfile do
      {:ecto, "~> 0.11.2"},
      {:ex_spec, "~> 0.3.0", only: :test},
      {:floki, "~> 0.2", only: :test},
-     {:phoenix, "~> 0.12"},
+     {:phoenix, "~> 0.13"},
      {:phoenix_ecto, "~> 0.3.2"},
-     {:phoenix_haml, github: "chrismccord/phoenix_haml"},
+     {:phoenix_html, "~> 1.0"},
      {:postgrex, ">= 0.0.0"},
-     {:phoenix_live_reload, "~> 0.3"},
+     {:phoenix_live_reload, "~> 0.4"},
      {:cowboy, "~> 1.0"}]
   end
 end
