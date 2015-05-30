@@ -7,12 +7,11 @@ defmodule IvanBloggo.User do
     field :email, :string
     field :encrypted_password, :string
     field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
 
     timestamps
   end
 
-  @required_fields ~w(email password password_confirmation encrypted_password)
+  @required_fields ~w(email password)
   @optional_fields ~w()
 
   @doc """
@@ -22,56 +21,28 @@ defmodule IvanBloggo.User do
   with no validation performed.
   """
   def changeset(model, params \\ :empty) do
-    processed_params = preprocess_params(params)
     model
-    |> cast(processed_params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields, @optional_fields)
     |> validate_unique(:email, on: Repo, downcase: true)
     |> validate_format(:email, ~r/.+@.+\..+/)
+    |> validate_confirmation(:password)
+    |> set_encryped_password
     |> validate_length(:encrypted_password, is: 60)
-    |> validate_password_matches_confirmation
   end
 
-  defp preprocess_params(params) when is_map(params) do
-    password = params["password"]
-    password_confirmation = params["password_confirmation"]
+  defp set_encryped_password(changeset) do
+    %{changes: changes} = changeset
 
-    if password_and_confirmation_match?(password, password_confirmation) do
-      Dict.put(params, "encrypted_password", safe_hashpwsalt(password))
+    if changeset.valid? do
+      encrypted_password = safe_hashpwsalt(changes[:password])
+      changes_with_encrypted_password = Map.put(changes, :encrypted_password, encrypted_password)
+      %{changeset | changes: changes_with_encrypted_password}
     else
-      params
+      changeset
     end
   end
-  defp preprocess_params(arg), do: arg
 
   defp safe_hashpwsalt(nil), do: nil
   defp safe_hashpwsalt(""), do: nil
   defp safe_hashpwsalt(password) when is_binary(password), do: hashpwsalt(password)
-
-  defp password_and_confirmation_match?(password, password_confirmation) do
-    strip(password) == strip(password_confirmation)
-  end
-
-  defp validate_password_matches_confirmation(changeset) do
-    %{changes: changes, errors: errors} = changeset
-    password = changes[:password]
-    password_confirmation = changes[:password_confirmation]
-
-    new_error = password_error(password, password_confirmation)
-
-    case new_error do
-      []    -> changeset
-      [_|_] -> %{changeset | errors: new_error ++ errors, valid?: false}
-    end
-  end
-
-  defp password_error(password, password_confirmation) do
-    if password_and_confirmation_match?(password, password_confirmation) do
-      []
-    else
-      [password_confirmation: "must match password"]
-    end
-  end
-
-  defp strip(nil), do: ""
-  defp strip(suspect) when is_binary(suspect), do: String.strip(suspect)
 end
