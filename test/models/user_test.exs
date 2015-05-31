@@ -32,17 +32,17 @@ defmodule IvanBloggo.UserTest do
 
   describe "#changeset" do
     context "with valid attributes" do
-      # it "is valid" do
-      #   changeset = User.changeset(%User{}, @valid_attrs)
-      #   assert changeset.valid?
-      # end
+      it "is valid" do
+        changeset = User.changeset(%User{}, @valid_attrs)
+        assert changeset.valid?
+      end
     end
 
     context "with invalid attributes" do
-      # it "is invalid" do
-      #   changeset = User.changeset(%User{}, @invalid_attrs)
-      #   refute changeset.valid?
-      # end
+      it "is invalid" do
+        changeset = User.changeset(%User{}, @invalid_attrs)
+        refute changeset.valid?
+      end
     end
   end
 
