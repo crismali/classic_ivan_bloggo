@@ -5,12 +5,13 @@ defmodule IvanBloggo.RegistrationControllerTest do
 
   alias IvanBloggo.User
 
+  @email "foo@example.com"
   @valid_params user: %{
-    email: "foo@example.com",
+    email: @email,
     password: "password",
     password_confirmation: "password"
   }
-  @invalid_params user: %{email: "", password: ""}
+  @invalid_params user: [email: @email, password: "foo", password_confirmation: ""]
 
   setup do
     conn = conn()
@@ -40,6 +41,7 @@ defmodule IvanBloggo.RegistrationControllerTest do
         assert count(User) == 0
         post conn, registration_path(conn, :create), @valid_params
         assert count(User) == 1
+        assert Repo.get_by(User, email: @email)
       end
     end
 
@@ -49,7 +51,7 @@ defmodule IvanBloggo.RegistrationControllerTest do
         response = html_response(conn, 200)
 
         assert response =~ "Sign up today!"
-        assert text_for(response, "label") =~ "can't be blank"
+        assert text_for(response, "label") =~ "does not match confirmation"
       end
 
       it "does not create a new user" do

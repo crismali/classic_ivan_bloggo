@@ -7,7 +7,8 @@ defmodule IvanBloggo.RegistrationController do
   plug :action
 
   def create(conn, %{"user" => user_params}) do
-    changeset = User.changeset(%User{}, user_params)
+    user_params_with_defaults = merge_defaults(user_params)
+    changeset = User.changeset(%User{}, user_params_with_defaults)
 
     if changeset.valid? do
       Repo.insert(changeset)
@@ -16,6 +17,11 @@ defmodule IvanBloggo.RegistrationController do
       render conn, "new.html", changeset: changeset
     end
   end
+
+  defp merge_defaults(%{"password_confirmation" => nil} = user_params) do
+    %{user_params | "password_confirmation" => ""}
+  end
+  defp merge_defaults(user_params), do: user_params
 
   def new(conn, _params) do
     render conn, "new.html", changeset: User.changeset(%User{})
