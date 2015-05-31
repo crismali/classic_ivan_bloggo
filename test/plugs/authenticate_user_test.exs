@@ -15,7 +15,6 @@ defmodule IvanBloggo.AuthenticateUserTest do
     assert AuthenticateUser.init(3) == 3
   end
 
-  @tag timeout: 9999999
   test "#call/2 when signed in", %{conn: conn} do
     email = "foo@example.com"
     password = "password"
